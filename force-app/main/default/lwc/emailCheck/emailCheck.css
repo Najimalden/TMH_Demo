@@ -1,0 +1,11 @@
+.userAvatar{
+    text-align: right;
+}
+.userInfo{
+    margin-top: 15px;
+}
+p{
+    color: red;
+    font-weight: bold;
+    text-align: center;
+}
