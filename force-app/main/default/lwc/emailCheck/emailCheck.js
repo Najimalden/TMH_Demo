@@ -2,10 +2,10 @@ import { LightningElement, api,wire } from 'lwc';
 import { getRecord, getFieldValue } from "lightning/uiRecordApi";
 import { CloseActionScreenEvent } from "lightning/actions";
 import ContactNotFoundMassage from '@salesforce/label/c.ContactNotFoundMessage';
-import CONTACT_NAME from "@salesforce/schema/Contact.Name";
-const fields = [CONTACT_NAME];
+import CONTACT_EMAIL from "@salesforce/schema/Contact.Email";
+const fields = [CONTACT_EMAIL];
 // GitHub API URL
-const END_POINT = 'https://api.github.com/users/';
+const END_POINT = 'https://api.github.com/search/users?q=';
 export default class EmailCheck extends LightningElement {
     @api recordId;
     dataObtained = false;
@@ -24,8 +24,8 @@ export default class EmailCheck extends LightningElement {
     wiredContact({ data, error }) {
             if (data) {
                 this.contact = data;
-                let username = (getFieldValue(this.contact, CONTACT_NAME));
-                this.fetchData(username.replaceAll(' ',''));
+                let username = (getFieldValue(this.contact, CONTACT_EMAIL));
+                this.fetchData(username);
 
             }
             else if (error) {
@@ -41,7 +41,7 @@ export default class EmailCheck extends LightningElement {
             method: "GET"
         })
             .then((response) => {
-                console.log('response: ' + response);
+                console.log('response: ' + JSON.stringify(response));
                 if (response.ok) {
                     return response.json();
                 } else {
@@ -51,7 +51,8 @@ export default class EmailCheck extends LightningElement {
                     throw Error(response);
                 }
             })
-            .then((githubUser) => {
+            .then((searchResult) => {
+                let githubUser = searchResult.items[0]
                 this.dataObtained = true;
                 this.isResponseOK = true;
                 this.user = {
